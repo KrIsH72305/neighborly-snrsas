@@ -142,10 +142,10 @@ export default function HomePage() {
                   <span style={{ fontSize: '0.8rem', color: '#64748b' }}>4.9 ★ Rating</span>
                 </div>
                 <h3 style={{ fontSize: '1.2rem', fontWeight: 700, marginBottom: '6px' }}>
-                  DeWalt 20V Max Cordless Drill Kit
+                  45-Piece Home Repair Tool Box
                 </h3>
                 <p style={{ fontSize: '0.875rem', color: '#64748b' }}>
-                  Lent with 2 batteries and full drill bits by Sarah Jenkins.
+                  Lent with claw hammer, wrenches, screwdrivers, and tape measure by Sarah Jenkins.
                 </p>
               </div>
 

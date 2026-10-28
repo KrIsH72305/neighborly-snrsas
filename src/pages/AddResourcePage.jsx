@@ -9,12 +9,12 @@ import { PlusCircle, Image as ImageIcon, Sparkles, AlertCircle } from 'lucide-re
 
 // Sample curated images for instant testing convenience
 const SAMPLE_IMAGE_PRESETS = [
-  { label: 'Power Drill', url: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80' },
-  { label: 'Extension Ladder', url: 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=600&auto=format&fit=crop&q=80' },
-  { label: 'Movie Projector', url: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=600&auto=format&fit=crop&q=80' },
-  { label: 'Lawn Mower', url: 'https://images.unsplash.com/photo-1592417817098-8f3d69104a49?w=600&auto=format&fit=crop&q=80' },
-  { label: 'Camping Tent', url: 'https://images.unsplash.com/photo-1510312305653-8ed496efae75?w=600&auto=format&fit=crop&q=80' },
-  { label: 'Book Collection', url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80' }
+  { label: 'Tool Box & Hammer', url: 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=600&auto=format&fit=crop&q=80' },
+  { label: '4-Step Ladder', url: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Steam Iron', url: 'https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Garden Hose', url: 'https://images.unsplash.com/photo-1592417817098-8f3d69104a49?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Vacuum Cleaner', url: 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=600&auto=format&fit=crop&q=80' },
+  { label: 'Folding Table', url: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=600&auto=format&fit=crop&q=80' }
 ]
 
 export default function AddResourcePage() {

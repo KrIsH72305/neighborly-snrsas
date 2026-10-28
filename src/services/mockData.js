@@ -11,7 +11,7 @@ export const INITIAL_PROFILES = [
     phone: '(555) 234-5678',
     avatar_url: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop&q=80',
     role: 'user',
-    bio: 'Avid DIYer and gardener. Happy to share tools with trusted neighbors!'
+    bio: 'Happy to share everyday household tools and equipment with friendly neighbors!'
   },
   {
     id: 'user-2',
@@ -21,7 +21,7 @@ export const INITIAL_PROFILES = [
     phone: '(555) 345-6789',
     avatar_url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80',
     role: 'user',
-    bio: 'Tech enthusiast and home cinema lover. Lending electronics & lawn care tools.'
+    bio: 'Sharing common home appliances, study supplies, and garden utilities.'
   },
   {
     id: 'user-3',
@@ -31,7 +31,7 @@ export const INITIAL_PROFILES = [
     phone: '(555) 456-7890',
     avatar_url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
     role: 'user',
-    bio: 'Book club organizer and outdoor gear collector. Let us share sustainably.'
+    bio: 'Neighbor sharing cleaning equipment, books, and balcony garden gear.'
   },
   {
     id: 'user-admin',
@@ -49,150 +49,150 @@ export const INITIAL_RESOURCES = [
   {
     id: 'res-1',
     owner_id: 'user-1',
-    title: 'DeWalt 20V Max Cordless Drill & Impact Driver Kit',
+    title: '45-Piece Home Repair Tool Box with Claw Hammer & Screwdrivers',
     category: 'Tools',
-    description: 'High-performance brushless drill kit including 2 lithium-ion batteries, charger, and standard masonry/wood drill bit set. Perfect for home repairs and shelf mounting.',
+    description: 'Basic essential home repair kit containing a solid claw hammer, adjustable wrench, pliers, utility knife, multi-bit screwdrivers, and a 16-foot tape measure. Ideal for assembling furniture, hanging wall frames, or tightening loose screws.',
     condition: 'Like New',
     locality: 'Maplewood Heights',
-    image_url: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80',
+    image_url: 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 60),
-    guidelines: 'Please recharge both batteries before returning. Return in original protective hardcase.',
+    guidelines: 'Please return all bits and pieces back into their molded organizer slots.',
     status: 'available',
     created_at: addDays(today, -15)
   },
   {
     id: 'res-2',
     owner_id: 'user-1',
-    title: 'Werner 16ft Aluminum Extension Ladder',
+    title: '4-Step Folding Aluminum Step Ladder with Anti-Slip Pedals',
     category: 'Tools',
-    description: 'Sturdy type II rated aluminum extension ladder with non-marring end caps and slip-resistant rungs. Maximum reach approx. 19 feet.',
+    description: 'Lightweight folding 4-step aluminum ladder with non-slip wide steps, safety hand grip, and rubber feet. Perfect for changing ceiling lightbulbs, cleaning kitchen cabinets, or hanging curtains.',
     condition: 'Good',
     locality: 'Maplewood Heights',
-    image_url: 'https://images.unsplash.com/photo-1581244277943-fe4a9c777189?w=600&auto=format&fit=crop&q=80',
+    image_url: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 45),
-    guidelines: 'Bring a vehicle with roof racks or a pickup truck for transport. Clean off any mud.',
+    guidelines: 'Folds flat easily; fits into any car trunk or backseat.',
     status: 'available',
     created_at: addDays(today, -12)
   },
   {
     id: 'res-3',
     owner_id: 'user-2',
-    title: 'Epson 1080p Home Cinema Movie Projector',
-    category: 'Electronics',
-    description: 'Crisp Full HD projector with 3,000 lumens brightness, HDMI inputs, and built-in speakers. Ideal for backyard movie nights, presentations, or gaming.',
+    title: 'Steam Clothes Iron with Padded Folding Ironing Board',
+    category: 'Household Items',
+    description: 'Non-stick ceramic soleplate steam iron with adjustable temperature settings and burst steam, paired with an adjustable folding ironing board. Great for ironing formal office shirts, suits, or traditional wear.',
     condition: 'Like New',
     locality: 'Maplewood Heights',
-    image_url: 'https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c?w=600&auto=format&fit=crop&q=80',
+    image_url: 'https://images.unsplash.com/photo-1517677208171-0bc6725a3e60?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 30),
-    guidelines: 'Handle lens with care. Includes 15-foot HDMI cord and protective padded bag.',
+    guidelines: 'Empty remaining water from tank before packing up.',
     status: 'available',
     created_at: addDays(today, -10)
   },
   {
     id: 'res-4',
     owner_id: 'user-2',
-    title: 'Honda 21-inch Self-Propelled Gas Lawn Mower',
+    title: '50-Foot Flexible Garden Water Hose with 8-Spray Pattern Nozzle',
     category: 'Gardening',
-    description: 'Twin-blade self-propelled mower with easy starting engine and mulch/bag capability. Runs smoothly and delivers clean cuts.',
+    description: 'Durable, lightweight expandable garden hose with brass connectors and an 8-mode spray nozzle (mist, jet, shower, flat, etc.). Ideal for watering balcony pots, washing the porch, or car cleaning.',
     condition: 'Good',
     locality: 'Maplewood Heights',
     image_url: 'https://images.unsplash.com/photo-1592417817098-8f3d69104a49?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 90),
-    guidelines: 'Regular unleaded 87 octane fuel only. Clean deck of grass clippings prior to drop-off.',
+    guidelines: 'Drain remaining water and coil loosely after use.',
     status: 'available',
     created_at: addDays(today, -20)
   },
   {
     id: 'res-5',
     owner_id: 'user-3',
-    title: 'Complete Harry Potter Special 7-Book Hardcover Set',
+    title: 'Engineering Mathematics & Reference Books with Scientific Calculator',
     category: 'Books',
-    description: 'Collector edition hardcovers in pristine condition. Great for family reading or binge-reading weekends.',
-    condition: 'New',
+    description: 'Higher Engineering Mathematics and Physics reference book set, along with a Casio FX-991EX scientific calculator. Perfect for semester exams, college assignments, and technical study sessions.',
+    condition: 'Like New',
     locality: 'Oakridge Park',
     image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 60),
-    guidelines: 'Keep away from moisture and liquids. Please use bookmarks rather than dog-earing pages.',
+    guidelines: 'Please keep books dry and do not write or highlight on the pages.',
     status: 'available',
     created_at: addDays(today, -8)
   },
   {
     id: 'res-6',
     owner_id: 'user-3',
-    title: 'Karcher K5 2000-PSI Electric Pressure Washer',
+    title: 'Compact Wet & Dry Canister Vacuum Cleaner',
     category: 'Household Items',
-    description: 'Electric pressure washer with dirt blaster wand and Vario Power spray. Fantastic for power-washing driveways, patios, outdoor furniture, and cars.',
+    description: 'High-suction 1200W compact vacuum cleaner with dust bag, sofa upholstery nozzle, and crevice tool. Excellent for weekend deep cleaning of bedrooms, mattresses, window sills, and car interiors.',
     condition: 'Like New',
     locality: 'Oakridge Park',
-    image_url: 'https://images.unsplash.com/photo-1584820927498-cfe5211fd8bf?w=600&auto=format&fit=crop&q=80',
+    image_url: 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 45),
-    guidelines: 'Standard garden hose inlet required. Connect to GFCI protected outdoor electrical outlet.',
+    guidelines: 'Empty dust canister after vacuuming dry dirt.',
     status: 'borrowed',
     created_at: addDays(today, -18)
   },
   {
     id: 'res-7',
     owner_id: 'user-1',
-    title: 'Coleman 6-Person Weatherproof Dome Camping Tent',
+    title: '4-Foot White Plastic Folding Table with 4 Sturdy Chairs',
     category: 'Household Items',
-    description: 'Spacious 10x10 ft dome tent with WeatherTec system to withstand 35+ mph winds. Setup takes under 10 minutes with snag-free continuous pole sleeves.',
+    description: 'Portable heavy-duty plastic folding table with 4 stackable chairs. Perfect for hosting extra guests, birthday dinners, festival gatherings, or setting up a temporary work/study area.',
     condition: 'Good',
     locality: 'Maplewood Heights',
-    image_url: 'https://images.unsplash.com/photo-1510312305653-8ed496efae75?w=600&auto=format&fit=crop&q=80',
+    image_url: 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 60),
-    guidelines: 'Ensure tent is completely dry and shaken clean of pine needles/sand before repacking into bag.',
+    guidelines: 'Wipe tabletop clean with a damp cloth before returning.',
     status: 'available',
     created_at: addDays(today, -5)
   },
   {
     id: 'res-8',
     owner_id: 'user-2',
-    title: 'Sony Alpha A6400 4K Mirrorless Digital Camera Kit',
+    title: '10-Foot Surge Protector Extension Board with 4 Fast USB Ports',
     category: 'Electronics',
-    description: 'Equipped with 16-50mm power zoom lens, ultra-fast autofocus, flip screen, 64GB high speed SD card, and 2 batteries. Ideal for graduation, weddings, or vacations.',
+    description: 'Heavy duty 6-socket universal power surge protector with 10ft cord, individual switches, and 4 USB fast-charging slots. Great for study sessions, home workstations, or family movie setups.',
     condition: 'Like New',
     locality: 'Maplewood Heights',
-    image_url: 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&auto=format&fit=crop&q=80',
+    image_url: 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 30),
-    guidelines: 'Use camera neck strap at all times. Backup your photos and format the SD card before returning.',
+    guidelines: 'For indoor use only. Do not overload with heavy heating appliances.',
     status: 'available',
     created_at: addDays(today, -25)
   },
   {
     id: 'res-9',
     owner_id: 'user-1',
-    title: 'Bosch SDS-Plus 1-Inch Rotary Hammer Drill',
+    title: '12V Cordless Hand Drill with Battery & Wall Anchor Screws',
     category: 'Tools',
-    description: 'Heavy duty rotary hammer for drilling into solid concrete, brick, and stone foundations. Includes chisel bit and grease.',
+    description: 'Compact, easy-to-use cordless hand drill with forward/reverse, battery charger, and basic drill bits. Perfect for hanging clocks, mirrors, and assembling wooden shelves.',
     condition: 'Good',
     locality: 'Maplewood Heights',
-    image_url: 'https://images.unsplash.com/photo-1572981779307-38b8cabb2407?w=600&auto=format&fit=crop&q=80',
+    image_url: 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 40),
-    guidelines: 'Safety glasses and ear protection strongly advised when operating.',
+    guidelines: 'Please recharge battery before returning.',
     status: 'available',
     created_at: addDays(today, -14)
   },
   {
     id: 'res-10',
     owner_id: 'user-3',
-    title: 'Stihl HSA 26 Cordless Grass & Shrub Shears',
+    title: 'Ergonomic Garden Hand Trowel, Cultivator & Pruning Shears Set',
     category: 'Gardening',
-    description: 'Lightweight, cordless hedge trimmer with dual action blades for shaping ornamental shrubs and precision lawn edging.',
+    description: 'Comfortable soft-grip rust-resistant gardening hand tool set including a soil trowel, small rake, and bypass pruning shears for trimming potted plants and balcony gardens.',
     condition: 'Like New',
     locality: 'Oakridge Park',
     image_url: 'https://images.unsplash.com/photo-1599818816935-86f2b7745778?w=600&auto=format&fit=crop&q=80',
     available_from: today,
     available_to: addDays(today, 60),
-    guidelines: 'Wipe resin off blades with vegetable oil or mild soap after use.',
+    guidelines: 'Wipe off dirt from blades and trowel before returning.',
     status: 'available',
     created_at: addDays(today, -7)
   }
@@ -201,22 +201,22 @@ export const INITIAL_RESOURCES = [
 export const INITIAL_REQUESTS = [
   {
     id: 'req-1',
-    resource_id: 'res-2', // Werner Ladder (Sarah's)
+    resource_id: 'res-2', // 4-Step Ladder (Sarah's)
     borrower_id: 'user-2', // David
     start_date: addDays(today, 2),
-    end_date: addDays(today, 4),
-    message: 'Hi Sarah, need to clean my second floor rain gutters this weekend before the rainy season!',
+    end_date: addDays(today, 3),
+    message: 'Hi Sarah, need to borrow your 4-step ladder to change two high ceiling lightbulbs in my living room this weekend!',
     status: 'pending',
     response_note: null,
     created_at: addDays(today, -1)
   },
   {
     id: 'req-2',
-    resource_id: 'res-3', // Projector (David's)
+    resource_id: 'res-3', // Steam Iron (David's)
     borrower_id: 'user-3', // Maria
-    start_date: addDays(today, 5),
-    end_date: addDays(today, 7),
-    message: 'Hello David! Our neighborhood book club is hosting an outdoor documentary showing.',
+    start_date: addDays(today, 4),
+    end_date: addDays(today, 5),
+    message: 'Hello David! I have an upcoming campus interview on Monday morning and need to press my formal blazer and shirts.',
     status: 'pending',
     response_note: null,
     created_at: addDays(today, -2)
@@ -227,41 +227,41 @@ export const INITIAL_RESERVATIONS = [
   {
     id: 'resv-1',
     request_id: 'req-prev-1',
-    resource_id: 'res-6', // Karcher Pressure Washer (Maria's)
+    resource_id: 'res-6', // Vacuum Cleaner (Maria's)
     borrower_id: 'user-2', // David Chen
     owner_id: 'user-3', // Maria Rodriguez
     start_date: addDays(today, -2),
-    end_date: addDays(today, 3),
+    end_date: addDays(today, 2),
     actual_return_date: null,
     status: 'active',
-    notes: 'David picked up washer on Wednesday afternoon with hose adapter.',
+    notes: 'David picked up the vacuum cleaner with the upholstery nozzle on Wednesday.',
     created_at: addDays(today, -3)
   },
   {
     id: 'resv-2',
     request_id: 'req-prev-2',
-    resource_id: 'res-8', // Sony A6400 (David's)
+    resource_id: 'res-8', // Extension Board (David's)
     borrower_id: 'user-1', // Sarah Jenkins
     owner_id: 'user-2', // David Chen
-    start_date: addDays(today, -12),
-    end_date: addDays(today, -7),
-    actual_return_date: addDays(today, -7),
+    start_date: addDays(today, -10),
+    end_date: addDays(today, -6),
+    actual_return_date: addDays(today, -6),
     status: 'returned',
-    notes: 'Returned on schedule in great shape.',
-    created_at: addDays(today, -14)
+    notes: 'Returned on schedule in clean condition.',
+    created_at: addDays(today, -12)
   },
   {
     id: 'resv-3',
     request_id: 'req-prev-3',
-    resource_id: 'res-1', // DeWalt Drill (Sarah's)
+    resource_id: 'res-1', // Home Tool Box (Sarah's)
     borrower_id: 'user-3', // Maria
     owner_id: 'user-1', // Sarah
-    start_date: addDays(today, -20),
-    end_date: addDays(today, -17),
-    actual_return_date: addDays(today, -17),
+    start_date: addDays(today, -18),
+    end_date: addDays(today, -15),
+    actual_return_date: addDays(today, -15),
     status: 'returned',
-    notes: 'Completed successfully.',
-    created_at: addDays(today, -22)
+    notes: 'Returned neatly with all screwdriver bits intact.',
+    created_at: addDays(today, -20)
   }
 ]
 
@@ -270,21 +270,21 @@ export const INITIAL_RATINGS = [
     id: 'rate-1',
     reservation_id: 'resv-2',
     resource_id: 'res-8',
-    reviewer_id: 'user-1', // Sarah reviewed David's camera
+    reviewer_id: 'user-1', // Sarah reviewed David's extension board
     reviewee_id: 'user-2', // David
     score: 5,
-    comment: 'The Sony camera was immaculate and captured incredible photos at my niece graduation! David gave clear battery instructions.',
-    created_at: addDays(today, -6)
+    comment: 'The power extension board worked great for our weekend study group. David gave helpful tips on socket safety!',
+    created_at: addDays(today, -5)
   },
   {
     id: 'rate-2',
     reservation_id: 'resv-3',
     resource_id: 'res-1',
-    reviewer_id: 'user-3', // Maria reviewed Sarah's drill
+    reviewer_id: 'user-3', // Maria reviewed Sarah's tool box
     reviewee_id: 'user-1', // Sarah
     score: 5,
-    comment: 'Sarah is an amazing neighbor! The drill made putting up our heavy bookshelf a breeze.',
-    created_at: addDays(today, -16)
+    comment: 'Sarah is an awesome neighbor! The hammer and screwdriver set made assembling our study desk so easy.',
+    created_at: addDays(today, -14)
   }
 ]
 
@@ -295,9 +295,9 @@ export const INITIAL_REPORTS = [
     resource_id: 'res-9',
     reported_user_id: 'user-1',
     reason: 'Misleading Description',
-    description: 'Minor concern: previous drill bit was slightly duller than listed, suggested adding a sharpening disclaimer.',
+    description: 'Minor suggestion: Previous drill battery charge lasted about 30 mins, suggested adding a note to keep the charger handy.',
     status: 'open',
-    admin_notes: 'Reviewed by admin. Advised owner to note bit condition.',
+    admin_notes: 'Reviewed by admin. Advised owner to note battery runtime.',
     created_at: addDays(today, -4)
   }
 ]

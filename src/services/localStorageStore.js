@@ -9,13 +9,13 @@ import {
 import { isDateOverlap, isOverdue, getTodayString } from '../utils/dateUtils'
 
 const STORAGE_KEYS = {
-  PROFILES: 'snrsas_demo_profiles_v1',
-  RESOURCES: 'snrsas_demo_resources_v1',
-  REQUESTS: 'snrsas_demo_requests_v1',
-  RESERVATIONS: 'snrsas_demo_reservations_v1',
-  RATINGS: 'snrsas_demo_ratings_v1',
-  REPORTS: 'snrsas_demo_reports_v1',
-  CURRENT_USER: 'snrsas_demo_current_user_v1'
+  PROFILES: 'snrsas_demo_profiles_v2',
+  RESOURCES: 'snrsas_demo_resources_v2',
+  REQUESTS: 'snrsas_demo_requests_v2',
+  RESERVATIONS: 'snrsas_demo_reservations_v2',
+  RATINGS: 'snrsas_demo_ratings_v2',
+  REPORTS: 'snrsas_demo_reports_v2',
+  CURRENT_USER: 'snrsas_demo_current_user_v2'
 }
 
 // Helper to safely load data
