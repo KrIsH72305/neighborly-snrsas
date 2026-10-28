@@ -17,12 +17,13 @@ import {
 } from 'lucide-react'
 import { getStatusBadgeClass, getConditionBadgeClass, truncateText } from '../utils/helpers'
 import { formatDate } from '../utils/dateUtils'
+import { normalizeUserId } from '../services/mockData'
 
 export default function ResourceCard({ resource, onRequest, onReport }) {
   const { user } = useAuth()
   const [imgError, setImgError] = useState(false)
 
-  const isOwner = user && user.id === resource.owner_id
+  const isOwner = user && normalizeUserId(user.id) === normalizeUserId(resource.owner_id)
 
   // Category Icon Resolver
   const getCategoryIcon = (cat) => {

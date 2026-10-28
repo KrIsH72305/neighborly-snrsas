@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { dbService } from '../services/dbService'
+import { normalizeUserId } from '../services/mockData'
 import { formatDate, isOverdue } from '../utils/dateUtils'
 import { getStatusBadgeClass } from '../utils/helpers'
 import {
@@ -33,8 +34,9 @@ export default function ReservationsPage() {
       setLoading(true)
       const all = await dbService.getReservations()
       // Filter active or confirmed or overdue reservations for the current user
+      const normUserId = normalizeUserId(user?.id)
       const userActive = all.filter(r =>
-        (r.borrower_id === user?.id || r.owner_id === user?.id) &&
+        (normalizeUserId(r.borrower_id) === normUserId || normalizeUserId(r.owner_id) === normUserId) &&
         r.status !== 'returned' &&
         r.status !== 'cancelled'
       )
@@ -91,7 +93,7 @@ export default function ReservationsPage() {
       ) : reservations.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {reservations.map(resv => {
-            const isOwner = user?.id === resv.owner_id
+            const isOwner = normalizeUserId(user?.id) === normalizeUserId(resv.owner_id)
             const overdue = resv.is_overdue || isOverdue(resv.end_date, resv.status, resv.actual_return_date)
 
             return (

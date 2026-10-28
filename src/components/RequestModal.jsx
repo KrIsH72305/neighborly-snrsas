@@ -5,6 +5,8 @@ import { dbService } from '../services/dbService'
 import { X, Calendar, MessageSquare, AlertCircle, CheckCircle2 } from 'lucide-react'
 import { getTodayString, addDays, getDurationDays, formatDate } from '../utils/dateUtils'
 
+import { normalizeUserId } from '../services/mockData'
+
 export default function RequestModal({ resource, onClose, onSuccess }) {
   const { user } = useAuth()
   const { showToast } = useToast()
@@ -30,7 +32,7 @@ export default function RequestModal({ resource, onClose, onSuccess }) {
       return
     }
 
-    if (user.id === resource.owner_id) {
+    if (normalizeUserId(user.id) === normalizeUserId(resource.owner_id)) {
       setError('You cannot request to borrow your own resource.')
       return
     }

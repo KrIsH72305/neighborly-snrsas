@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { dbService } from '../services/dbService'
+import { normalizeUserId } from '../services/mockData'
 import { X, Star, AlertCircle, HeartHandshake } from 'lucide-react'
 
 export default function RatingModal({ reservation, onClose, onSuccess }) {
@@ -14,12 +15,14 @@ export default function RatingModal({ reservation, onClose, onSuccess }) {
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState(null)
 
+  const isBorrower = normalizeUserId(user?.id) === normalizeUserId(reservation.borrower_id)
+
   // Determine who is being reviewed (if user is borrower -> reviewee is owner, and vice-versa)
-  const revieweeId = user?.id === reservation.borrower_id
+  const revieweeId = isBorrower
     ? reservation.owner_id
     : reservation.borrower_id
 
-  const otherPersonName = user?.id === reservation.borrower_id
+  const otherPersonName = isBorrower
     ? (reservation.owner?.full_name || 'Lender')
     : (reservation.borrower?.full_name || 'Borrower')
 

@@ -1,12 +1,14 @@
 import React from 'react'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { RotateCcw, Database, UserCheck, Sparkles } from 'lucide-react'
-import { INITIAL_PROFILES } from '../services/mockData'
+import { RotateCcw, Database, UserCheck } from 'lucide-react'
+import { INITIAL_PROFILES, normalizeUserId } from '../services/mockData'
 
 export default function DemoBanner() {
   const { user, isDemo, switchDemoUser, resetDemoData } = useAuth()
   const { showToast } = useToast()
+
+  const currentUserId = user ? normalizeUserId(user.id) : 'guest'
 
   const handleUserChange = (e) => {
     const val = e.target.value
@@ -14,9 +16,10 @@ export default function DemoBanner() {
       switchDemoUser(null)
       showToast('Logged out (Guest Mode)', 'info')
     } else {
-      switchDemoUser(val)
-      const found = INITIAL_PROFILES.find(p => p.id === val)
-      showToast(`Switched account to: ${found?.full_name}`, 'success')
+      const normVal = normalizeUserId(val)
+      switchDemoUser(normVal)
+      const found = INITIAL_PROFILES.find(p => p.id === normVal || p.legacy_id === val)
+      showToast(`Switched account to: ${found?.full_name || 'Community Member'}`, 'success')
     }
   }
 
@@ -62,14 +65,14 @@ export default function DemoBanner() {
           <select
             id="demo-user-selector"
             className="demo-select"
-            value={user ? user.id : 'guest'}
+            value={currentUserId}
             onChange={handleUserChange}
             title="Switch between borrower, owner, and admin accounts to test workflows"
           >
-            <option value="user-1">Sarah Jenkins (Owner / Borrower - Maplewood)</option>
-            <option value="user-2">David Chen (Owner / Borrower - Maplewood)</option>
-            <option value="user-3">Maria Rodriguez (Neighbor - Oakridge)</option>
-            <option value="user-admin">Alex Rivera (System Administrator)</option>
+            <option value="a1111111-1111-1111-1111-111111111111">Sarah Jenkins (Owner / Borrower - Maplewood)</option>
+            <option value="a2222222-2222-2222-2222-222222222222">David Chen (Owner / Borrower - Maplewood)</option>
+            <option value="a3333333-3333-3333-3333-333333333333">Maria Rodriguez (Neighbor - Oakridge)</option>
+            <option value="a4444444-4444-4444-4444-444444444444">Alex Rivera (System Administrator)</option>
             <option value="guest">Log Out (Guest Mode)</option>
           </select>
         </div>

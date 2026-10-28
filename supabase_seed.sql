@@ -6,7 +6,15 @@
 -- Step 1: Remove strict auth foreign key constraint so seed profiles can be inserted directly
 ALTER TABLE public.profiles DROP CONSTRAINT IF EXISTS profiles_id_fkey;
 
--- Step 2: Clear any existing mock data cleanly
+-- Step 2: Disable Row-Level Security during project evaluation so 1-click test accounts can write directly to live database
+ALTER TABLE public.profiles DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.resources DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.borrow_requests DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reservations DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.ratings DISABLE ROW LEVEL SECURITY;
+ALTER TABLE public.reports DISABLE ROW LEVEL SECURITY;
+
+-- Step 3: Clear any existing mock data cleanly
 DELETE FROM public.reports;
 DELETE FROM public.ratings;
 DELETE FROM public.reservations;
@@ -36,7 +44,9 @@ VALUES
   ('b5555555-5555-5555-5555-555555555555', 'a3333333-3333-3333-3333-333333333333', 'Engineering Mathematics & Reference Books with Scientific Calculator', 'Books', 'Higher Engineering Mathematics and Physics reference book set, along with a Casio FX-991EX scientific calculator. Perfect for semester exams.', 'Like New', 'Oakridge Park', 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80', CURRENT_DATE, CURRENT_DATE + INTERVAL '60 days', 'Please keep books dry and do not write or highlight on pages.', 'available'),
   ('b6666666-6666-6666-6666-666666666666', 'a3333333-3333-3333-3333-333333333333', 'Compact Wet & Dry Canister Vacuum Cleaner', 'Household Items', 'High-suction 1200W compact vacuum cleaner with dust bag, sofa upholstery nozzle, and crevice tool. Excellent for deep room cleaning.', 'Like New', 'Oakridge Park', 'https://images.unsplash.com/photo-1558317374-067fb5f30001?w=600&auto=format&fit=crop&q=80', CURRENT_DATE, CURRENT_DATE + INTERVAL '45 days', 'Empty dust canister after vacuuming.', 'borrowed'),
   ('b7777777-7777-7777-7777-777777777777', 'a1111111-1111-1111-1111-111111111111', '4-Foot White Plastic Folding Table with 4 Sturdy Chairs', 'Household Items', 'Portable heavy-duty plastic folding table with 4 stackable chairs. Perfect for hosting extra guests, festival dinners, or temporary study.', 'Good', 'Maplewood Heights', 'https://images.unsplash.com/photo-1533090161767-e6ffed986c88?w=600&auto=format&fit=crop&q=80', CURRENT_DATE, CURRENT_DATE + INTERVAL '60 days', 'Wipe tabletop clean with a damp cloth before returning.', 'available'),
-  ('b8888888-8888-8888-8888-888888888888', 'a2222222-2222-2222-2222-222222222222', '10-Foot Surge Protector Extension Board with 4 Fast USB Ports', 'Electronics', 'Heavy duty 6-socket universal power surge protector with 10ft cord, individual switches, and 4 USB fast-charging slots. Great for study sessions.', 'Like New', 'Maplewood Heights', 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80', CURRENT_DATE, CURRENT_DATE + INTERVAL '30 days', 'For indoor use only. Do not overload.', 'available');
+  ('b8888888-8888-8888-8888-888888888888', 'a2222222-2222-2222-2222-222222222222', '10-Foot Surge Protector Extension Board with 4 Fast USB Ports', 'Electronics', 'Heavy duty 6-socket universal power surge protector with 10ft cord, individual switches, and 4 USB fast-charging slots. Great for study sessions.', 'Like New', 'Maplewood Heights', 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=600&auto=format&fit=crop&q=80', CURRENT_DATE, CURRENT_DATE + INTERVAL '30 days', 'For indoor use only. Do not overload.', 'available'),
+  ('b9999999-9999-9999-9999-999999999999', 'a1111111-1111-1111-1111-111111111111', '12V Cordless Hand Drill with Battery & Wall Anchor Screws', 'Tools', 'Compact cordless drill with forward/reverse, battery charger, and basic bits. Perfect for hanging frames or shelves.', 'Good', 'Maplewood Heights', 'https://images.unsplash.com/photo-1504148455328-c376907d081c?w=600&auto=format&fit=crop&q=80', CURRENT_DATE, CURRENT_DATE + INTERVAL '40 days', 'Recharge battery before returning.', 'available'),
+  ('ba101010-1010-1010-1010-101010101010', 'a3333333-3333-3333-3333-333333333333', 'Ergonomic Garden Hand Trowel, Cultivator & Pruning Shears Set', 'Gardening', 'Comfortable soft-grip rust-resistant gardening hand tool set including a soil trowel, small rake, and pruning shears.', 'Like New', 'Oakridge Park', 'https://images.unsplash.com/photo-1599818816935-86f2b7745778?w=600&auto=format&fit=crop&q=80', CURRENT_DATE, CURRENT_DATE + INTERVAL '60 days', 'Wipe off dirt from blades and trowel before returning.', 'available');
 
 -- -------------------------------------------------------------------------
 -- 3. INSERT BORROW REQUESTS
@@ -51,7 +61,7 @@ VALUES
 -- -------------------------------------------------------------------------
 INSERT INTO public.reservations (id, request_id, resource_id, borrower_id, owner_id, start_date, end_date, actual_return_date, status, notes)
 VALUES
-  ('d1111111-1111-1111-1111-111111111111', NULL, 'b6666666-6666-6666-6666-666666666666', 'a2222222-2222-2222-2222-222222222222', 'a3333333-3333-3333-3333-333333333333', CURRENT_DATE - INTERVAL '2 days', CURRENT_DATE + INTERVAL '2 days', NULL, 'active', 'David picked up the vacuum cleaner with the upholstery nozzle on Wednesday.'),
+  ('d1111111-1111-1111-1111-111111111111', 'c1111111-1111-1111-1111-111111111111', 'b6666666-6666-6666-6666-666666666666', 'a2222222-2222-2222-2222-222222222222', 'a3333333-3333-3333-3333-333333333333', CURRENT_DATE - INTERVAL '2 days', CURRENT_DATE + INTERVAL '2 days', NULL, 'active', 'David picked up the vacuum cleaner with the upholstery nozzle on Wednesday.'),
   ('d2222222-2222-2222-2222-222222222222', NULL, 'b8888888-8888-8888-8888-888888888888', 'a1111111-1111-1111-1111-111111111111', 'a2222222-2222-2222-2222-222222222222', CURRENT_DATE - INTERVAL '10 days', CURRENT_DATE - INTERVAL '6 days', CURRENT_DATE - INTERVAL '6 days', 'returned', 'Returned on schedule in clean condition.'),
   ('d3333333-3333-3333-3333-333333333333', NULL, 'b1111111-1111-1111-1111-111111111111', 'a3333333-3333-3333-3333-333333333333', 'a1111111-1111-1111-1111-111111111111', CURRENT_DATE - INTERVAL '18 days', CURRENT_DATE - INTERVAL '15 days', CURRENT_DATE - INTERVAL '15 days', 'returned', 'Returned neatly with all screwdriver bits intact.');
 
@@ -68,4 +78,4 @@ VALUES
 -- -------------------------------------------------------------------------
 INSERT INTO public.reports (id, reporter_id, resource_id, reported_user_id, reason, description, status, admin_notes)
 VALUES
-  ('f1111111-1111-1111-1111-111111111111', 'a2222222-2222-2222-2222-222222222222', 'b1111111-1111-1111-1111-111111111111', 'a1111111-1111-1111-1111-111111111111', 'Misleading Description', 'Minor suggestion: Previous drill battery charge lasted about 30 mins, suggested adding a note to keep charger handy.', 'open', 'Reviewed by admin. Advised owner to note battery runtime.');
+  ('f1111111-1111-1111-1111-111111111111', 'a2222222-2222-2222-2222-222222222222', 'b9999999-9999-9999-9999-999999999999', 'a1111111-1111-1111-1111-111111111111', 'Misleading Description', 'Minor suggestion: Previous drill battery charge lasted about 30 mins, suggested adding a note to keep charger handy.', 'open', 'Reviewed by admin. Advised owner to note battery runtime.');

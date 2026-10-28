@@ -11,6 +11,7 @@ import ReportModal from '../components/ReportModal'
 import EditResourceModal from '../components/EditResourceModal'
 import ConfirmDialog from '../components/ConfirmDialog'
 import ResourceCard from '../components/ResourceCard'
+import { normalizeUserId } from '../services/mockData'
 import {
   ArrowLeft,
   MapPin,
@@ -97,7 +98,7 @@ export default function ResourceDetailPage() {
     )
   }
 
-  const isOwner = user && user.id === resource.owner_id
+  const isOwner = user && normalizeUserId(user.id) === normalizeUserId(resource.owner_id)
   const durationDays = getDurationDays(startDate, endDate)
 
   // Check rule-based alternatives if item is not available

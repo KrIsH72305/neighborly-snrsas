@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { dbService } from '../services/dbService'
+import { normalizeUserId } from '../services/mockData'
 import { formatDate } from '../utils/dateUtils'
 import { getStatusBadgeClass } from '../utils/helpers'
 import {
@@ -47,22 +48,23 @@ export default function DashboardOverview() {
   }, [user])
 
   // Compute metrics for current user
-  const myResources = resources.filter(r => r.owner_id === user?.id && r.status !== 'archived')
+  const normUserId = normalizeUserId(user?.id)
+  const myResources = resources.filter(r => normalizeUserId(r.owner_id) === normUserId && r.status !== 'archived')
 
   // Incoming pending requests for items owned by current user
   const pendingIncomingRequests = requests.filter(req =>
-    req.resource?.owner_id === user?.id && req.status === 'pending'
+    normalizeUserId(req.resource?.owner_id) === normUserId && req.status === 'pending'
   )
 
   // Active reservations (borrower OR owner)
   const activeReservations = reservations.filter(resv =>
-    (resv.borrower_id === user?.id || resv.owner_id === user?.id) &&
+    (normalizeUserId(resv.borrower_id) === normUserId || normalizeUserId(resv.owner_id) === normUserId) &&
     (resv.status === 'confirmed' || resv.status === 'active' || resv.status === 'overdue')
   )
 
   // Completed transactions
   const completedTransactions = reservations.filter(resv =>
-    (resv.borrower_id === user?.id || resv.owner_id === user?.id) &&
+    (normalizeUserId(resv.borrower_id) === normUserId || normalizeUserId(resv.owner_id) === normUserId) &&
     resv.status === 'returned'
   )
 

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { dbService } from '../services/dbService'
+import { normalizeUserId } from '../services/mockData'
 import { formatDate, getDurationDays } from '../utils/dateUtils'
 import { getStatusBadgeClass } from '../utils/helpers'
 import {
@@ -51,8 +52,9 @@ export default function BorrowRequestsPage() {
   }, [user])
 
   // Filter incoming vs outgoing
-  const incomingRequests = requests.filter(req => req.resource?.owner_id === user?.id)
-  const outgoingRequests = requests.filter(req => req.borrower_id === user?.id)
+  const normUserId = normalizeUserId(user?.id)
+  const incomingRequests = requests.filter(req => normalizeUserId(req.resource?.owner_id) === normUserId)
+  const outgoingRequests = requests.filter(req => normalizeUserId(req.borrower_id) === normUserId)
 
   const openActionModal = (request, action) => {
     setActionTarget({ request, action })

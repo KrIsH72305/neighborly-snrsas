@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { dbService } from '../services/dbService'
+import { normalizeUserId } from '../services/mockData'
 import { formatDate } from '../utils/dateUtils'
 import RatingModal from '../components/RatingModal'
 import {
@@ -32,8 +33,9 @@ export default function BorrowingHistoryPage() {
       ])
 
       // Filter returned / completed transactions for user
+      const normUserId = normalizeUserId(user?.id)
       const completed = allResv.filter(r =>
-        (r.borrower_id === user?.id || r.owner_id === user?.id) &&
+        (normalizeUserId(r.borrower_id) === normUserId || normalizeUserId(r.owner_id) === normUserId) &&
         r.status === 'returned'
       )
 
@@ -54,7 +56,8 @@ export default function BorrowingHistoryPage() {
 
   // Helper to check if current user rated this transaction
   const getUserRating = (reservationId) => {
-    return ratings.find(r => r.reservation_id === reservationId && r.reviewer_id === user?.id)
+    const normUserId = normalizeUserId(user?.id)
+    return ratings.find(r => r.reservation_id === reservationId && normalizeUserId(r.reviewer_id) === normUserId)
   }
 
   return (
@@ -75,7 +78,7 @@ export default function BorrowingHistoryPage() {
       ) : completedReservations.length > 0 ? (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           {completedReservations.map(resv => {
-            const isOwner = user?.id === resv.owner_id
+            const isOwner = normalizeUserId(user?.id) === normalizeUserId(resv.owner_id)
             const existingRating = getUserRating(resv.id)
 
             return (

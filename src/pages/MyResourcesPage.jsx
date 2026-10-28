@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
 import { dbService } from '../services/dbService'
+import { normalizeUserId } from '../services/mockData'
 import { formatDate } from '../utils/dateUtils'
 import { getStatusBadgeClass, getConditionBadgeClass } from '../utils/helpers'
 import EditResourceModal from '../components/EditResourceModal'
@@ -32,7 +33,8 @@ export default function MyResourcesPage() {
     try {
       setLoading(true)
       const all = await dbService.getResources()
-      const mine = all.filter(r => r.owner_id === user?.id && r.status !== 'archived')
+      const normUserId = normalizeUserId(user?.id)
+      const mine = all.filter(r => normalizeUserId(r.owner_id) === normUserId && r.status !== 'archived')
       setResources(mine)
     } catch (e) {
       console.error(e)
