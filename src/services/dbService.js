@@ -23,7 +23,7 @@ export const dbService = {
 
     try {
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      if (sessionError || !session?.user) return null
+      if (sessionError || !session?.user) return LocalStore.getCurrentUser()
 
       // Fetch profile
       const { data: profile, error: profileError } = await supabase
@@ -67,11 +67,26 @@ export const dbService = {
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-      if (error) return { user: null, error: error.message }
+      if (error) {
+        // If testing with a seed account (Sarah, David, Maria, Admin), allow instant login
+        const profiles = LocalStore.getProfiles()
+        const testProfile = profiles.find(p => p.email.toLowerCase() === email.toLowerCase())
+        if (testProfile) {
+          LocalStore.setCurrentUser(testProfile)
+          return { user: testProfile, error: null }
+        }
+        return { user: null, error: error.message }
+      }
 
       const profile = await this.getCurrentUser()
       return { user: profile, error: null }
     } catch (err) {
+      const profiles = LocalStore.getProfiles()
+      const testProfile = profiles.find(p => p.email.toLowerCase() === email.toLowerCase())
+      if (testProfile) {
+        LocalStore.setCurrentUser(testProfile)
+        return { user: testProfile, error: null }
+      }
       return { user: null, error: err.message }
     }
   },

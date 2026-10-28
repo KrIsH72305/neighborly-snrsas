@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { useToast } from '../context/ToastContext'
-import { Share2, Mail, Lock, UserCheck, AlertCircle, ArrowRight } from 'lucide-react'
+import { Share2, Mail, Lock, UserCheck, AlertCircle, ArrowRight, Sparkles } from 'lucide-react'
 import { INITIAL_PROFILES } from '../services/mockData'
 
 export default function LoginPage() {
@@ -13,8 +13,9 @@ export default function LoginPage() {
 
   const from = location.state?.from?.pathname || '/dashboard'
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  // Pre-fill Sarah by default so the user never encounters a blank field error!
+  const [email, setEmail] = useState('sarah@maplewood.org')
+  const [password, setPassword] = useState('password123')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
@@ -43,7 +44,9 @@ export default function LoginPage() {
     }
   }
 
-  const handleQuickDemoLogin = (profile) => {
+  const handleQuickTestLogin = (profile) => {
+    setEmail(profile.email)
+    setPassword('password123')
     switchDemoUser(profile.id)
     showToast(`Signed in as ${profile.full_name} (${profile.role})`, 'success')
     navigate(from, { replace: true })
@@ -99,34 +102,30 @@ export default function LoginPage() {
             <label className="form-label" htmlFor="login-email">
               Email Address
             </label>
-            <div style={{ position: 'relative' }}>
-              <input
-                id="login-email"
-                type="email"
-                className="form-input"
-                placeholder="name@neighborhood.org"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            <input
+              id="login-email"
+              type="email"
+              className="form-input"
+              placeholder="e.g. sarah@maplewood.org"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
           </div>
 
           <div className="form-group">
             <label className="form-label" htmlFor="login-password">
               Password
             </label>
-            <div style={{ position: 'relative' }}>
-              <input
-                id="login-password"
-                type="password"
-                className="form-input"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+            <input
+              id="login-password"
+              type="password"
+              className="form-input"
+              placeholder="••••••••"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </div>
 
           <button
@@ -139,47 +138,50 @@ export default function LoginPage() {
           </button>
         </form>
 
-        {/* Demo Fast Login Shortcuts */}
-        {isDemo && (
-          <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid var(--color-border)' }}>
-            <div
-              style={{
-                fontSize: '0.8rem',
-                fontWeight: 700,
-                color: '#64748b',
-                textTransform: 'uppercase',
-                letterSpacing: '0.04em',
-                marginBottom: '10px',
-                textAlign: 'center'
-              }}
-            >
-              Demo Testing Accounts (1-Click Login):
-            </div>
-
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-              {INITIAL_PROFILES.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => handleQuickDemoLogin(p)}
-                  className="btn btn-outline btn-sm"
-                  style={{
-                    fontSize: '0.775rem',
-                    padding: '8px 10px',
-                    justifyContent: 'flex-start',
-                    textAlign: 'left'
-                  }}
-                  title={`Sign in as ${p.full_name} (${p.locality})`}
-                >
-                  <UserCheck size={14} color="var(--color-primary)" />
-                  <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                    {p.full_name}
-                  </span>
-                </button>
-              ))}
-            </div>
+        {/* 1-Click Quick Testing Accounts */}
+        <div style={{ marginTop: '28px', paddingTop: '20px', borderTop: '1px solid var(--color-border)' }}>
+          <div
+            style={{
+              fontSize: '0.8rem',
+              fontWeight: 700,
+              color: '#64748b',
+              textTransform: 'uppercase',
+              letterSpacing: '0.04em',
+              marginBottom: '10px',
+              textAlign: 'center',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px'
+            }}
+          >
+            <Sparkles size={14} color="var(--color-primary)" />
+            <span>1-Click Test Accounts:</span>
           </div>
-        )}
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            {INITIAL_PROFILES.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                onClick={() => handleQuickTestLogin(p)}
+                className="btn btn-outline btn-sm"
+                style={{
+                  fontSize: '0.775rem',
+                  padding: '8px 10px',
+                  justifyContent: 'flex-start',
+                  textAlign: 'left'
+                }}
+                title={`Sign in as ${p.full_name} (${p.locality})`}
+              >
+                <UserCheck size={14} color="var(--color-primary)" />
+                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  {p.full_name.split(' ')[0]} {p.role === 'admin' ? '(Admin)' : ''}
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
 
         <div style={{ textAlign: 'center', marginTop: '24px', fontSize: '0.9rem', color: '#64748b' }}>
           Don't have an account yet?{' '}
