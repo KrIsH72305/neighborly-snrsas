@@ -200,22 +200,16 @@ export default function ReservationsPage() {
                     Reservation ID: <code>{resv.id}</code>
                   </div>
 
-                  {isOwner ? (
-                    <button
-                      onClick={() => {
-                        setReturningTarget(resv)
-                        setReturnNotes('Item received back in good working condition.')
-                      }}
-                      className="btn btn-primary btn-sm"
-                    >
-                      <RotateCcw size={15} />
-                      <span>Mark Item as Returned</span>
-                    </button>
-                  ) : (
-                    <span style={{ fontSize: '0.85rem', color: '#64748b', fontStyle: 'italic' }}>
-                      Hand back to lender by {formatDate(resv.end_date)}. The owner will confirm return.
-                    </span>
-                  )}
+                  <button
+                    onClick={() => {
+                      setReturningTarget(resv)
+                      setReturnNotes(isOwner ? 'Item received back in good working condition.' : 'Item returned back to lender safely.')
+                    }}
+                    className="btn btn-primary btn-sm"
+                  >
+                    <RotateCcw size={15} />
+                    <span>{isOwner ? 'Confirm & Log Return' : 'Log Item as Returned'}</span>
+                  </button>
                 </div>
               </div>
             )
@@ -253,8 +247,12 @@ export default function ReservationsPage() {
             <form onSubmit={handleConfirmReturn}>
               <div className="modal-body">
                 <p style={{ fontSize: '0.9rem', color: '#475569', marginBottom: '16px' }}>
-                  Confirm that <strong>{returningTarget.borrower?.full_name}</strong> has returned <strong>"{returningTarget.resource?.title}"</strong> to you.
-                  This will record today's date as the actual return date and mark the transaction as completed.
+                  {normalizeUserId(user?.id) === normalizeUserId(returningTarget.owner_id) ? (
+                    <>Confirm that <strong>{returningTarget.borrower?.full_name || 'Neighbor'}</strong> has returned <strong>"{returningTarget.resource?.title}"</strong> to you.</>
+                  ) : (
+                    <>Log that you have handed back <strong>"{returningTarget.resource?.title}"</strong> to lender <strong>{returningTarget.owner?.full_name || 'Lender'}</strong>.</>
+                  )}
+                  {' '}This records today as the actual return date and completes the borrowing transaction.
                 </p>
 
                 <div className="form-group">
