@@ -1,16 +1,20 @@
 import { supabase, isConfigured } from './supabase'
 import { LocalStore } from './localStorageStore'
-import { normalizeUserId, normalizeResourceId } from './mockData'
+import { normalizeUserId, normalizeResourceId, INITIAL_RESOURCES } from './mockData'
+
+/**
+ * Helper to ensure async Supabase queries never hang the UI if network latency is high.
+ */
+function withTimeout(promise, ms = 2000) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => setTimeout(() => reject(new Error('Supabase request timed out')), ms))
+  ])
+}
 
 /**
  * Unified Database and Auth Service for Neighborly (SNRSAS)
- *
- * When Supabase environment variables are provided:
- *   Communicates with Supabase PostgreSQL and Supabase Auth.
- *   Provides resilient fallbacks to realistic neighborhood seed data
- *   so the application is NEVER empty during college evaluation presentations.
  */
-
 export const dbService = {
   isDemoMode() {
     return !isConfigured
@@ -23,17 +27,20 @@ export const dbService = {
     }
 
     try {
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      const { data: { session }, error: sessionError } = await withTimeout(supabase.auth.getSession(), 1500)
       if (sessionError || !session?.user) {
         return LocalStore.getCurrentUser()
       }
 
       // Fetch profile from Supabase
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', session.user.id)
-        .single()
+      const { data: profile, error: profileError } = await withTimeout(
+        supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', session.user.id)
+          .single(),
+        1500
+      )
 
       if (profileError || !profile) {
         return {
@@ -67,9 +74,11 @@ export const dbService = {
     }
 
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+      const { data, error } = await withTimeout(
+        supabase.auth.signInWithPassword({ email, password }),
+        2500
+      )
       if (error) {
-        // Fallback for seed test accounts (Sarah, David, Maria, Admin)
         const profiles = LocalStore.getProfiles()
         const testProfile = profiles.find(p => p.email.toLowerCase() === email.toLowerCase())
         if (testProfile) {
@@ -104,17 +113,20 @@ export const dbService = {
     }
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name,
-            locality: locality || 'Maplewood Heights',
-            role: 'user'
+      const { data, error } = await withTimeout(
+        supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name,
+              locality: locality || 'Maplewood Heights',
+              role: 'user'
+            }
           }
-        }
-      })
+        }),
+        2500
+      )
       if (error) {
         const localUser = LocalStore.createProfile({ full_name, email, locality, phone })
         return { user: localUser, error: null }
@@ -138,7 +150,6 @@ export const dbService = {
     return { error: null }
   },
 
-  // Switch demo user quickly for examiner testing
   switchDemoUser(userId) {
     if (!userId) {
       LocalStore.setCurrentUser(null)
@@ -161,29 +172,55 @@ export const dbService = {
       return LocalStore.getResources()
     }
     try {
-      const { data, error } = await supabase
-        .from('resources')
-        .select(`
-          *,
-          owner:profiles!resources_owner_id_fkey(id, full_name, locality, avatar_url),
-          ratings(score)
-        `)
-        .order('created_at', { ascending: false })
+      const { data, error } = await withTimeout(
+        supabase
+          .from('resources')
+          .select(`
+            *,
+            owner:profiles!resources_owner_id_fkey(id, full_name, locality, avatar_url),
+            ratings(score)
+          `)
+          .order('created_at', { ascending: false }),
+        2000
+      )
 
       if (error || !data || data.length === 0) {
         return LocalStore.getResources()
       }
 
-      return data.map(item => {
+      const mapped = data.map(item => {
         const scores = item.ratings?.map(r => r.score) || []
         const avg = scores.length > 0 ? (scores.reduce((a, b) => a + b, 0) / scores.length).toFixed(1) : null
+        const normOwnerId = normalizeUserId(item.owner_id)
+        const owner = item.owner || LocalStore.getProfileById(normOwnerId) || {
+          id: normOwnerId,
+          full_name: 'Community Neighbor',
+          locality: item.locality || 'Maplewood Heights'
+        }
+        const seed = INITIAL_RESOURCES.find(
+          r => r.id === item.id || normalizeResourceId(r.id) === normalizeResourceId(item.id) || r.title === item.title
+        )
         return {
           ...item,
+          owner,
+          image_url: seed?.image_url || item.image_url,
           average_rating: avg ? parseFloat(avg) : null,
           review_count: scores.length
         }
       })
+
+      // Merge remaining seed catalog if not present in Supabase
+      const existingIds = new Set(mapped.map(m => m.id))
+      const localItems = LocalStore.getResources()
+      for (const item of localItems) {
+        if (!existingIds.has(item.id)) {
+          mapped.push(item)
+        }
+      }
+
+      return mapped
     } catch (err) {
+      console.warn('Supabase getResources using local fallback:', err.message)
       return LocalStore.getResources()
     }
   },
@@ -194,19 +231,38 @@ export const dbService = {
       return LocalStore.getResourceById(normId) || LocalStore.getResourceById(id)
     }
     try {
-      const { data, error } = await supabase
-        .from('resources')
-        .select(`
-          *,
-          owner:profiles!resources_owner_id_fkey(id, full_name, locality, avatar_url, phone, email)
-        `)
-        .or(`id.eq.${normId},id.eq.${id}`)
-        .single()
+      const { data, error } = await withTimeout(
+        supabase
+          .from('resources')
+          .select(`
+            *,
+            owner:profiles!resources_owner_id_fkey(id, full_name, locality, avatar_url, phone, email)
+          `)
+          .or(`id.eq.${normId},id.eq.${id}`)
+          .single(),
+        2000
+      )
 
       if (error || !data) {
         return LocalStore.getResourceById(normId) || LocalStore.getResourceById(id)
       }
-      return data
+
+      const normOwnerId = normalizeUserId(data.owner_id)
+      const owner = data.owner || LocalStore.getProfileById(normOwnerId) || {
+        id: normOwnerId,
+        full_name: 'Community Neighbor',
+        locality: data.locality || 'Maplewood Heights'
+      }
+
+      const seed = INITIAL_RESOURCES.find(
+        r => r.id === data.id || normalizeResourceId(r.id) === normalizeResourceId(data.id) || r.title === data.title
+      )
+
+      return {
+        ...data,
+        owner,
+        image_url: seed?.image_url || data.image_url
+      }
     } catch (err) {
       return LocalStore.getResourceById(normId) || LocalStore.getResourceById(id)
     }
@@ -220,19 +276,20 @@ export const dbService = {
       return localItem
     }
     try {
-      const { data: item, error } = await supabase
-        .from('resources')
-        .insert([{ ...data, owner_id: normOwnerId }])
-        .select()
-        .single()
+      const { data: item, error } = await withTimeout(
+        supabase
+          .from('resources')
+          .insert([{ ...data, owner_id: normOwnerId }])
+          .select()
+          .single(),
+        2500
+      )
 
       if (error) {
-        console.warn('Supabase createResource notice:', error.message)
         return localItem
       }
       return item || localItem
     } catch (err) {
-      console.warn('Supabase createResource exception:', err.message)
       return localItem
     }
   },
@@ -246,12 +303,15 @@ export const dbService = {
       return localUpdated
     }
     try {
-      const { data: updated, error } = await supabase
-        .from('resources')
-        .update(data)
-        .or(`id.eq.${normId},id.eq.${id}`)
-        .select()
-        .single()
+      const { data: updated, error } = await withTimeout(
+        supabase
+          .from('resources')
+          .update(data)
+          .or(`id.eq.${normId},id.eq.${id}`)
+          .select()
+          .single(),
+        2500
+      )
 
       if (error) {
         return localUpdated
@@ -271,10 +331,13 @@ export const dbService = {
       return localDeleted
     }
     try {
-      const { error } = await supabase
-        .from('resources')
-        .delete()
-        .or(`id.eq.${normId},id.eq.${id}`)
+      const { error } = await withTimeout(
+        supabase
+          .from('resources')
+          .delete()
+          .or(`id.eq.${normId},id.eq.${id}`),
+        2500
+      )
 
       if (error) {
         return localDeleted
@@ -291,20 +354,22 @@ export const dbService = {
       return LocalStore.getRequests()
     }
     try {
-      const { data, error } = await supabase
-        .from('borrow_requests')
-        .select(`
-          *,
-          resource:resources(*),
-          borrower:profiles!borrow_requests_borrower_id_fkey(*)
-        `)
-        .order('created_at', { ascending: false })
+      const { data, error } = await withTimeout(
+        supabase
+          .from('borrow_requests')
+          .select(`
+            *,
+            resource:resources(*),
+            borrower:profiles!borrow_requests_borrower_id_fkey(*)
+          `)
+          .order('created_at', { ascending: false }),
+        2000
+      )
 
       if (error || !data || data.length === 0) {
         return LocalStore.getRequests()
       }
 
-      // Merge with any local requests created during demo sessions
       const localReqs = LocalStore.getRequests()
       const supabaseIds = new Set(data.map(d => d.id))
       const combined = [...data]
@@ -328,12 +393,11 @@ export const dbService = {
       resource_id: normResourceId
     }
 
-    // Always persist to local store first so UI updates with 100% reliability
     let localResult = null
     try {
       localResult = LocalStore.createRequest(sanitized)
     } catch (localErr) {
-      console.warn('Local store notice:', localErr.message)
+      console.warn('Local store note:', localErr.message)
     }
 
     if (!isConfigured) {
@@ -341,29 +405,30 @@ export const dbService = {
     }
 
     try {
-      const { data, error } = await supabase
-        .from('borrow_requests')
-        .insert([{
-          resource_id: sanitized.resource_id,
-          borrower_id: sanitized.borrower_id,
-          start_date: sanitized.start_date,
-          end_date: sanitized.end_date,
-          message: sanitized.message
-        }])
-        .select(`
-          *,
-          resource:resources(*),
-          borrower:profiles!borrow_requests_borrower_id_fkey(*)
-        `)
-        .single()
+      const { data, error } = await withTimeout(
+        supabase
+          .from('borrow_requests')
+          .insert([{
+            resource_id: sanitized.resource_id,
+            borrower_id: sanitized.borrower_id,
+            start_date: sanitized.start_date,
+            end_date: sanitized.end_date,
+            message: sanitized.message
+          }])
+          .select(`
+            *,
+            resource:resources(*),
+            borrower:profiles!borrow_requests_borrower_id_fkey(*)
+          `)
+          .single(),
+        2500
+      )
 
       if (error) {
-        console.warn('Supabase insert borrow_request notice:', error.message)
         return localResult
       }
       return data || localResult
     } catch (err) {
-      console.warn('Supabase insert borrow_request exception:', err.message)
       return localResult
     }
   },
@@ -373,38 +438,44 @@ export const dbService = {
     try {
       localApproved = LocalStore.approveRequest(requestId, responseNote)
     } catch (e) {
-      console.warn('Local approve notice:', e.message)
+      console.warn('Local approve note:', e.message)
     }
 
     if (!isConfigured) {
       return localApproved
     }
     try {
-      const { data: req, error: reqErr } = await supabase
-        .from('borrow_requests')
-        .update({ status: 'approved', response_note: responseNote })
-        .eq('id', requestId)
-        .select('*, resource:resources(*)')
-        .single()
+      const { data: req, error: reqErr } = await withTimeout(
+        supabase
+          .from('borrow_requests')
+          .update({ status: 'approved', response_note: responseNote })
+          .eq('id', requestId)
+          .select('*, resource:resources(*)')
+          .single(),
+        2500
+      )
 
       if (reqErr) {
         return localApproved
       }
 
-      const { data: resv, error: resvErr } = await supabase
-        .from('reservations')
-        .insert([{
-          request_id: req.id,
-          resource_id: req.resource_id,
-          borrower_id: req.borrower_id,
-          owner_id: req.resource.owner_id,
-          start_date: req.start_date,
-          end_date: req.end_date,
-          status: 'confirmed',
-          notes: responseNote || 'Approved by owner'
-        }])
-        .select()
-        .single()
+      const { data: resv, error: resvErr } = await withTimeout(
+        supabase
+          .from('reservations')
+          .insert([{
+            request_id: req.id,
+            resource_id: req.resource_id,
+            borrower_id: req.borrower_id,
+            owner_id: req.resource.owner_id,
+            start_date: req.start_date,
+            end_date: req.end_date,
+            status: 'confirmed',
+            notes: responseNote || 'Approved by owner'
+          }])
+          .select()
+          .single(),
+        2500
+      )
 
       if (resvErr) {
         return localApproved
@@ -420,19 +491,22 @@ export const dbService = {
     try {
       localRejected = LocalStore.rejectRequest(requestId, responseNote)
     } catch (e) {
-      console.warn('Local reject notice:', e.message)
+      console.warn('Local reject note:', e.message)
     }
 
     if (!isConfigured) {
       return localRejected
     }
     try {
-      const { data, error } = await supabase
-        .from('borrow_requests')
-        .update({ status: 'rejected', response_note: responseNote })
-        .eq('id', requestId)
-        .select()
-        .single()
+      const { data, error } = await withTimeout(
+        supabase
+          .from('borrow_requests')
+          .update({ status: 'rejected', response_note: responseNote })
+          .eq('id', requestId)
+          .select()
+          .single(),
+        2500
+      )
 
       if (error) {
         return localRejected
@@ -449,21 +523,23 @@ export const dbService = {
       return LocalStore.getReservations()
     }
     try {
-      const { data, error } = await supabase
-        .from('reservations')
-        .select(`
-          *,
-          resource:resources(*),
-          borrower:profiles!reservations_borrower_id_fkey(*),
-          owner:profiles!reservations_owner_id_fkey(*)
-        `)
-        .order('created_at', { ascending: false })
+      const { data, error } = await withTimeout(
+        supabase
+          .from('reservations')
+          .select(`
+            *,
+            resource:resources(*),
+            borrower:profiles!reservations_borrower_id_fkey(*),
+            owner:profiles!reservations_owner_id_fkey(*)
+          `)
+          .order('created_at', { ascending: false }),
+        2000
+      )
 
       if (error || !data || data.length === 0) {
         return LocalStore.getReservations()
       }
 
-      // Merge local active/confirmed reservations
       const localResvs = LocalStore.getReservations()
       const supabaseIds = new Set(data.map(d => d.id))
       const combined = [...data]
@@ -483,7 +559,7 @@ export const dbService = {
     try {
       localReturned = LocalStore.markAsReturned(reservationId, notes)
     } catch (e) {
-      console.warn('Local return notice:', e.message)
+      console.warn('Local return note:', e.message)
     }
 
     if (!isConfigured) {
@@ -491,16 +567,19 @@ export const dbService = {
     }
     try {
       const today = new Date().toISOString().split('T')[0]
-      const { data, error } = await supabase
-        .from('reservations')
-        .update({
-          status: 'returned',
-          actual_return_date: today,
-          notes: notes || 'Item returned safely'
-        })
-        .eq('id', reservationId)
-        .select()
-        .single()
+      const { data, error } = await withTimeout(
+        supabase
+          .from('reservations')
+          .update({
+            status: 'returned',
+            actual_return_date: today,
+            notes: notes || 'Item returned safely'
+          })
+          .eq('id', reservationId)
+          .select()
+          .single(),
+        2500
+      )
 
       if (error) {
         return localReturned
@@ -523,7 +602,7 @@ export const dbService = {
     try {
       let query = supabase.from('ratings').select('*, reviewer:profiles(*)')
       if (normResId) query = query.or(`resource_id.eq.${normResId},resource_id.eq.${resourceId}`)
-      const { data, error } = await query
+      const { data, error } = await withTimeout(query, 2000)
       if (error || !data || data.length === 0) {
         const all = LocalStore.getRatings()
         return normResId
@@ -551,18 +630,21 @@ export const dbService = {
     try {
       localRating = LocalStore.createRating(sanitized)
     } catch (e) {
-      console.warn('Local rating notice:', e.message)
+      console.warn('Local rating note:', e.message)
     }
 
     if (!isConfigured) {
       return localRating
     }
     try {
-      const { data, error } = await supabase
-        .from('ratings')
-        .insert([sanitized])
-        .select()
-        .single()
+      const { data, error } = await withTimeout(
+        supabase
+          .from('ratings')
+          .insert([sanitized])
+          .select()
+          .single(),
+        2500
+      )
 
       if (error) {
         return localRating
@@ -579,14 +661,17 @@ export const dbService = {
       return LocalStore.getReports()
     }
     try {
-      const { data, error } = await supabase
-        .from('reports')
-        .select(`
-          *,
-          reporter:profiles!reports_reporter_id_fkey(*),
-          resource:resources(*)
-        `)
-        .order('created_at', { ascending: false })
+      const { data, error } = await withTimeout(
+        supabase
+          .from('reports')
+          .select(`
+            *,
+            reporter:profiles!reports_reporter_id_fkey(*),
+            resource:resources(*)
+          `)
+          .order('created_at', { ascending: false }),
+        2000
+      )
 
       if (error || !data || data.length === 0) {
         return LocalStore.getReports()
@@ -618,18 +703,21 @@ export const dbService = {
     try {
       localRep = LocalStore.createReport(sanitized)
     } catch (e) {
-      console.warn('Local report notice:', e.message)
+      console.warn('Local report note:', e.message)
     }
 
     if (!isConfigured) {
       return localRep
     }
     try {
-      const { data, error } = await supabase
-        .from('reports')
-        .insert([sanitized])
-        .select()
-        .single()
+      const { data, error } = await withTimeout(
+        supabase
+          .from('reports')
+          .insert([sanitized])
+          .select()
+          .single(),
+        2500
+      )
 
       if (error) {
         return localRep
@@ -645,19 +733,22 @@ export const dbService = {
     try {
       localRep = LocalStore.updateReportStatus(reportId, status, adminNotes)
     } catch (e) {
-      console.warn('Local update report notice:', e.message)
+      console.warn('Local update report note:', e.message)
     }
 
     if (!isConfigured) {
       return localRep
     }
     try {
-      const { data, error } = await supabase
-        .from('reports')
-        .update({ status, admin_notes: adminNotes })
-        .eq('id', reportId)
-        .select()
-        .single()
+      const { data, error } = await withTimeout(
+        supabase
+          .from('reports')
+          .update({ status, admin_notes: adminNotes })
+          .eq('id', reportId)
+          .select()
+          .single(),
+        2500
+      )
 
       if (error) {
         return localRep
